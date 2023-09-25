@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class DoorManager : MonoBehaviour
@@ -29,9 +30,7 @@ public class DoorManager : MonoBehaviour
         bool result = doorFunctions.ActiveDoor(currentDoor);
         if(result)
         {
-            doorFunctions.RemoveQuestion(currentDoor, this);
-            doorFunctions.OpenDoor(currentDoor, this);
-            currentDoor = null;
+            StartCoroutine(RemoveQuestionAndOpenDoor(2f));
         }
     }
 
@@ -45,5 +44,13 @@ public class DoorManager : MonoBehaviour
     {
         currentDoor = null;
         doorFunctions.RemoveQuestion(door, this);
+    }
+
+    private IEnumerator RemoveQuestionAndOpenDoor(float waitTime)
+    {
+        doorFunctions.OpenDoor(currentDoor, this);
+        yield return new WaitForSeconds(waitTime);
+        doorFunctions.RemoveQuestion(currentDoor, this);
+        currentDoor = null;
     }
 }

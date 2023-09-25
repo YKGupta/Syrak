@@ -15,7 +15,13 @@ public class DoorQuestion
     public GameObject textCanvasGO;
     [ShowIf("mode", QuestionPresentationMode.Text)]
     [AllowNesting]
-    public TMP_Text questionText;
+    public GameObject panelGO;
+    [ShowIf("mode", QuestionPresentationMode.Text)]
+    [AllowNesting]
+    public GameObject questionPrefab;
+    [ShowIf("mode", QuestionPresentationMode.Text)]
+    [AllowNesting]
+    public GameObject optionPrefab;
     [ShowIf("mode", QuestionPresentationMode.Text)]
     [AllowNesting]
     public Question question;
