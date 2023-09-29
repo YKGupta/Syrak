@@ -20,6 +20,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        if(!PlayerManager.instance.isPlayerAllowedToMove)
+            return;
+
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
         if(isGrounded && velocity.y < 0f)

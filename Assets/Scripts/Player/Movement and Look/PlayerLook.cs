@@ -14,6 +14,9 @@ public class PlayerLook : MonoBehaviour
 
     private void Update()
     {
+        if(!PlayerManager.instance.isPlayerAllowedToLook)
+            return;
+
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;    
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
