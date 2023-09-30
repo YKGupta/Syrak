@@ -38,6 +38,22 @@ public class DoorQuestion
     [AllowNesting]
     public KeyQuestion keyQuestion;
 
+    [ShowIf("mode", QuestionPresentationMode.Subjective)]
+    [AllowNesting]
+    public GameObject subjectiveCanvasGO;
+    [ShowIf("mode", QuestionPresentationMode.Subjective)]
+    [AllowNesting]
+    public GameObject subjectivePanelGO;
+    [ShowIf("mode", QuestionPresentationMode.Subjective)]
+    [AllowNesting]
+    public GameObject subjectiveQuestionPrefab;
+    [ShowIf("mode", QuestionPresentationMode.Subjective)]
+    [AllowNesting]
+    public GameObject subjectiveAnswerPrefab;
+    [ShowIf("mode", QuestionPresentationMode.Subjective)]
+    [AllowNesting]
+    public SubjectiveQuestion subjectiveQuestion;
+
     [ShowIf("mode", QuestionPresentationMode.Audio)]
     [AllowNesting]
     public AudioSource source;

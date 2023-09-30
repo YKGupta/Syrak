@@ -16,6 +16,9 @@ public class InventoryManager : MonoBehaviour
 
     public KeyCode inventoryToggleKey;
 
+    [HideInInspector]
+    public bool isPlayerAllowedToOpenInventory;
+
     private List<Item> items;
 
     public static InventoryManager instance;
@@ -28,10 +31,14 @@ public class InventoryManager : MonoBehaviour
     private void Start()
     {
         items = new List<Item>();
+        isPlayerAllowedToOpenInventory = true;
     }
 
     private void Update()
     {
+        if(!isPlayerAllowedToOpenInventory)
+            return;
+            
         if(Input.GetKeyDown(inventoryToggleKey))
         {
             SetInventory(!inventoryGO.activeSelf);

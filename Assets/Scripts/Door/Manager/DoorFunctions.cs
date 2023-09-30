@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class DoorFunctions : MonoBehaviour
 {
@@ -11,17 +10,23 @@ public class DoorFunctions : MonoBehaviour
     {
         DoorQuestion temp = door.doorQuestion;
         doorManager.doorIsActive = true;
+
+        PlayerManager.instance.isPlayerAllowedToLook = false;
+        PlayerManager.instance.isPlayerAllowedToMove = false;
+        inventoryManager.isPlayerAllowedToOpenInventory = false;
+        Cursor.lockState = CursorLockMode.None;
+
         switch(temp.mode)
         {
             case QuestionPresentationMode.MCQ:
             {
                 GameObject questionGO = Instantiate(temp.questionPrefab, temp.panelGO.transform);
-                questionGO.GetComponentInChildren<TMP_Text>().text = temp.question.question;
+                questionGO.GetComponent<UI_Initialiser>().SetText(temp.question.question);
                 
                 foreach(Option op in temp.question.options)
                 {
                     GameObject optionGO = Instantiate(temp.optionPrefab, temp.panelGO.transform);
-                    optionGO.GetComponentInChildren<TMP_Text>().text = op.option;
+                    optionGO.GetComponent<UI_Initialiser>().SetText(op.option);
                     op.associatedGO = optionGO;
                 }
 
@@ -32,10 +37,23 @@ public class DoorFunctions : MonoBehaviour
             case QuestionPresentationMode.Key:
             {
                 GameObject questionGO = Instantiate(temp.keyQuestionPrefab, temp.keyPanelGO.transform);
-                questionGO.GetComponentInChildren<TMP_Text>().text = temp.keyQuestion.question;
+                questionGO.GetComponent<UI_Initialiser>().SetText(temp.keyQuestion.question);
                 temp.keyQuestion.associatedGO = questionGO;
 
                 temp.keyCanvasGO.SetActive(true);
+                break;
+            }
+
+            case QuestionPresentationMode.Subjective:
+            {
+                GameObject questionGO = Instantiate(temp.subjectiveQuestionPrefab, temp.subjectivePanelGO.transform);
+                GameObject answerGO = Instantiate(temp.subjectiveAnswerPrefab, temp.subjectivePanelGO.transform);
+                questionGO.GetComponent<UI_Initialiser>().SetText(temp.subjectiveQuestion.question);
+                temp.subjectiveQuestion.associatedGO = questionGO;
+                temp.subjectiveQuestion.answer.associatedGO = answerGO;
+                temp.subjectiveQuestion.answer.associatedGO.GetComponent<UI_Initialiser>().GetInputField().onEndEdit.AddListener(temp.subjectiveQuestion.answer.OnEndEdit);
+
+                temp.subjectiveCanvasGO.SetActive(true);
                 break;
             }
             
@@ -63,6 +81,12 @@ public class DoorFunctions : MonoBehaviour
     {
         DoorQuestion temp = door.doorQuestion;
         doorManager.doorIsActive = false;
+
+        PlayerManager.instance.isPlayerAllowedToLook = true;
+        PlayerManager.instance.isPlayerAllowedToMove = true;
+        inventoryManager.isPlayerAllowedToOpenInventory = true;
+        Cursor.lockState = CursorLockMode.Locked;
+
         switch(temp.mode)
         {
             case QuestionPresentationMode.MCQ:
@@ -80,6 +104,18 @@ public class DoorFunctions : MonoBehaviour
                     Destroy(temp.keyPanelGO.transform.GetChild(i).gameObject);
 
                 temp.keyCanvasGO.SetActive(false);
+                break;
+            }
+        
+            case QuestionPresentationMode.Subjective:
+            {
+                PlayerManager.instance.isPlayerAllowedToLook = true;
+                PlayerManager.instance.isPlayerAllowedToMove = true;
+                                
+                for(int i = 0; i < temp.subjectivePanelGO.transform.childCount; i++)
+                    Destroy(temp.subjectivePanelGO.transform.GetChild(i).gameObject);
+
+                temp.subjectiveCanvasGO.SetActive(false);
                 break;
             }
             
@@ -103,7 +139,7 @@ public class DoorFunctions : MonoBehaviour
 
     public bool ActiveDoor(Door door)
     {
-        if(door.doorQuestion.mode != QuestionPresentationMode.MCQ && door.doorQuestion.mode != QuestionPresentationMode.Key)
+        if(door.doorQuestion.mode != QuestionPresentationMode.MCQ && door.doorQuestion.mode != QuestionPresentationMode.Key && door.doorQuestion.mode != QuestionPresentationMode.Subjective)
             return false;
         switch(door.doorQuestion.mode)
         {
@@ -117,13 +153,13 @@ public class DoorFunctions : MonoBehaviour
                     if(op.isCorrect)
                     {
                         Debug.Log("Correct Answer!!");
-                        StartCoroutine(FlashColor(op.associatedGO.GetComponentInChildren<Image>(), op.correctColor));
+                        StartCoroutine(FlashColor(op.associatedGO.GetComponent<UI_Initialiser>().GetImage(), op.correctColor));
                         door.enabled = false;
                         return true;
                     }
                     else
                     {
-                        StartCoroutine(FlashColor(op.associatedGO.GetComponentInChildren<Image>(), op.incorrectColor));
+                        StartCoroutine(FlashColor(op.associatedGO.GetComponent<UI_Initialiser>().GetImage(), op.incorrectColor));
                     }
                 }
                 break;
@@ -138,13 +174,39 @@ public class DoorFunctions : MonoBehaviour
                 Item item = inventoryManager.FindItem(keyQuestion.itemId);
                 if(item == null)
                 {
-                    StartCoroutine(FlashColor(keyQuestion.associatedGO.GetComponentInChildren<Image>(), keyQuestion.incorrectColor));
+                    StartCoroutine(FlashColor(keyQuestion.associatedGO.GetComponent<UI_Initialiser>().GetImage(), keyQuestion.incorrectColor));
                 }
                 else
                 {
                     Debug.Log("Found item!");
                     inventoryManager.RemoveItem(item, true, inventoryManager.inventoryGO.activeSelf);
-                    StartCoroutine(FlashColor(keyQuestion.associatedGO.GetComponentInChildren<Image>(), keyQuestion.correctColor));
+                    StartCoroutine(FlashColor(keyQuestion.associatedGO.GetComponent<UI_Initialiser>().GetImage(), keyQuestion.correctColor));
+                    door.enabled = false;
+                    return true;
+                }
+
+                break;
+            }
+
+            case QuestionPresentationMode.Subjective:
+            {
+                SubjectiveQuestion subjectiveQuestion = door.doorQuestion.subjectiveQuestion;
+
+                if(!subjectiveQuestion.answer.answered)
+                    break;
+
+                subjectiveQuestion.answer.answered = false;
+
+                string typedAnswer = subjectiveQuestion.answer.associatedGO.GetComponent<UI_Initialiser>().GetInputField().text;
+
+                if(!typedAnswer.ToLower().Equals(subjectiveQuestion.answer.answer.ToLower()))
+                {
+                    StartCoroutine(FlashColor(subjectiveQuestion.answer.associatedGO.GetComponent<UI_Initialiser>().GetImage(), subjectiveQuestion.incorrectColor));
+                }
+                else
+                {
+                    Debug.Log("Correct Answer!");
+                    StartCoroutine(FlashColor(subjectiveQuestion.answer.associatedGO.GetComponent<UI_Initialiser>().GetImage(), subjectiveQuestion.correctColor));
                     door.enabled = false;
                     return true;
                 }

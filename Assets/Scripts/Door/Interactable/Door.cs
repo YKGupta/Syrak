@@ -8,9 +8,19 @@ public class Door : MonoBehaviour
     public Animator animator;
     [ShowIf("isLocked")]
     public DoorQuestion doorQuestion;
+    [ShowIf("isLocked")]
+    public KeyCode exitDoorKeyCode;
 
     public event Action<Door, Transform> PlayerEntered; 
     public event Action<Door, Transform> PlayerExited; 
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(exitDoorKeyCode))
+        {
+            PlayerExited?.Invoke(this, null);
+        }
+    }
 
     private void OnTriggerEnter(Collider other)
     {
