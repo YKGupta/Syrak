@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 117823980}
   - component: {fileID: 117823979}
   m_Layer: 0
-  m_Name: Question Holder
+  m_Name: MCQ Question Holder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -192,7 +192,7 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 1
+  m_ChildAlignment: 4
   m_Spacing: 5
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
@@ -311,7 +311,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactionUIGO: {fileID: 316888664}
-  name: Demo
+  name: Keyboard
+  id: 0
   sprite: {fileID: 21300000, guid: 874d8401331ede14087e8d8d486ddda6, type: 3}
 --- !u!65 &158378908
 BoxCollider:
@@ -424,6 +425,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 117823978}
+  - {fileID: 1541377599}
   m_Father: {fileID: 795178569}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
@@ -593,6 +595,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bc1c265744dfea44b94187d03242db2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inventoryManager: {fileID: 912177741}
 --- !u!1 &249405396
 GameObject:
   m_ObjectHideFlags: 0
@@ -1364,6 +1367,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactionUIGO: {fileID: 252458764}
   name: Demo 2
+  id: 2
   sprite: {fileID: 21300000, guid: 6fac4e39926fd9c4ca2ba4416160a857, type: 3}
 --- !u!65 &447530589
 BoxCollider:
@@ -1907,9 +1911,8 @@ MonoBehaviour:
   isLocked: 1
   animator: {fileID: 936530895}
   doorQuestion:
-    name: Math
-    questionType: 0
-    mode: 0
+    name: Bring me keyboard
+    mode: 3
     textCanvasGO: {fileID: 162789875}
     panelGO: {fileID: 117823977}
     questionPrefab: {fileID: 2887459898033108857, guid: 23b714fdcac7daa48962ce2f9f0b8ae8,
@@ -1943,6 +1946,18 @@ MonoBehaviour:
         correctColor: {r: 0.09411766, g: 1, b: 0, a: 0.5019608}
         incorrectColor: {r: 1, g: 0, b: 0, a: 0.5019608}
         associatedGO: {fileID: 0}
+    keyCanvasGO: {fileID: 162789875}
+    keyPanelGO: {fileID: 1541377598}
+    keyQuestionPrefab: {fileID: 3044046237342553259, guid: dc6debdfdc9c7f04284c7dad4cedcc6d,
+      type: 3}
+    keyQuestion:
+      question: I have keys but open no locks. I have a space but no room. You can
+        enter, but you can't go inside. What am I?
+      itemId: 0
+      keyCode: 122
+      correctColor: {r: 0.09, g: 1, b: 0, a: 0.5}
+      incorrectColor: {r: 1, g: 0, b: 0, a: 0.5}
+      associatedGO: {fileID: 0}
     source: {fileID: 0}
     clip: {fileID: 0}
     subtitlesCanvasGO: {fileID: 0}
@@ -2201,6 +2216,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactionUIGO: {fileID: 1340119115}
   name: Demo 3
+  id: 1
   sprite: {fileID: 21300000, guid: ec03f79379868c642b48ae5ddc821b6d, type: 3}
 --- !u!65 &855772784
 BoxCollider:
@@ -2383,7 +2399,6 @@ MonoBehaviour:
   itemsUIParent: {fileID: 647702194}
   loadingScreenGO: {fileID: 1563633696}
   inventoryToggleKey: 105
-  items: []
 --- !u!1 &919380866
 GameObject:
   m_ObjectHideFlags: 0
@@ -3629,6 +3644,69 @@ Transform:
   m_Father: {fileID: 1941460900}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1541377598
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1541377599}
+  - component: {fileID: 1541377600}
+  m_Layer: 0
+  m_Name: Key Question Holder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1541377599
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1541377598}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.0000071525583}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 162789876}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 1}
+--- !u!114 &1541377600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1541377598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 4
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &1563633696
 GameObject:
   m_ObjectHideFlags: 0

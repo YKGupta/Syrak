@@ -6,25 +6,37 @@ using TMPro;
 public class DoorQuestion
 {
     public string name;
-    public QuestionType questionType;
     public QuestionPresentationMode mode;
 
     [HorizontalLine(color: EColor.Violet)]
-    [ShowIf("mode", QuestionPresentationMode.Text)]
+    [ShowIf("mode", QuestionPresentationMode.MCQ)]
     [AllowNesting]
     public GameObject textCanvasGO;
-    [ShowIf("mode", QuestionPresentationMode.Text)]
+    [ShowIf("mode", QuestionPresentationMode.MCQ)]
     [AllowNesting]
     public GameObject panelGO;
-    [ShowIf("mode", QuestionPresentationMode.Text)]
+    [ShowIf("mode", QuestionPresentationMode.MCQ)]
     [AllowNesting]
     public GameObject questionPrefab;
-    [ShowIf("mode", QuestionPresentationMode.Text)]
+    [ShowIf("mode", QuestionPresentationMode.MCQ)]
     [AllowNesting]
     public GameObject optionPrefab;
-    [ShowIf("mode", QuestionPresentationMode.Text)]
+    [ShowIf("mode", QuestionPresentationMode.MCQ)]
     [AllowNesting]
     public Question question;
+
+    [ShowIf("mode", QuestionPresentationMode.Key)]
+    [AllowNesting]
+    public GameObject keyCanvasGO;
+    [ShowIf("mode", QuestionPresentationMode.Key)]
+    [AllowNesting]
+    public GameObject keyPanelGO;
+    [ShowIf("mode", QuestionPresentationMode.Key)]
+    [AllowNesting]
+    public GameObject keyQuestionPrefab;
+    [ShowIf("mode", QuestionPresentationMode.Key)]
+    [AllowNesting]
+    public KeyQuestion keyQuestion;
 
     [ShowIf("mode", QuestionPresentationMode.Audio)]
     [AllowNesting]

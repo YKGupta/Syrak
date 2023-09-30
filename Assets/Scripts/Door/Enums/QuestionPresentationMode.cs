@@ -1,6 +1,7 @@
 public enum QuestionPresentationMode
 {
-    Text,
+    MCQ,
     Audio,
-    Visual
+    Visual,
+    Key
 }

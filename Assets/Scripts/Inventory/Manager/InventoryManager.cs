@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
+using System;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -15,13 +16,18 @@ public class InventoryManager : MonoBehaviour
 
     public KeyCode inventoryToggleKey;
 
-    public List<Item> items;
+    private List<Item> items;
 
     public static InventoryManager instance;
 
     private void Awake()
     {
         instance = this;
+    }
+
+    private void Start()
+    {
+        items = new List<Item>();
     }
 
     private void Update()
@@ -86,13 +92,19 @@ public class InventoryManager : MonoBehaviour
         item.enabled = false;
     }
     
-    public void RemoveItem(Item item)
+    public void RemoveItem(Item item, bool isUsed = false, bool showInventory = true)
     {
         items.Remove(item);
-        item.gameObject.GetComponent<Renderer>().enabled = true;
-        item.gameObject.GetComponent<Collider>().enabled = true;
-        item.enabled = true;
+        item.gameObject.GetComponent<Renderer>().enabled = !isUsed;
+        item.gameObject.GetComponent<Collider>().enabled = !isUsed;
+        item.enabled = !isUsed;
 
-        SetInventory(true);
+        SetInventory(showInventory);
+    }
+
+    public Item FindItem(int id)
+    {
+        Item temp = items.Find(x => x.id == id);
+        return temp;
     }
 }

@@ -5,13 +5,15 @@ using TMPro;
 
 public class DoorFunctions : MonoBehaviour
 {
+    public InventoryManager inventoryManager;
+
     public void PresentQuestion(Door door, DoorManager doorManager)
     {
         DoorQuestion temp = door.doorQuestion;
         doorManager.doorIsActive = true;
         switch(temp.mode)
         {
-            case QuestionPresentationMode.Text:
+            case QuestionPresentationMode.MCQ:
             {
                 GameObject questionGO = Instantiate(temp.questionPrefab, temp.panelGO.transform);
                 questionGO.GetComponentInChildren<TMP_Text>().text = temp.question.question;
@@ -24,6 +26,16 @@ public class DoorFunctions : MonoBehaviour
                 }
 
                 temp.textCanvasGO.SetActive(true);
+                break;
+            }
+
+            case QuestionPresentationMode.Key:
+            {
+                GameObject questionGO = Instantiate(temp.keyQuestionPrefab, temp.keyPanelGO.transform);
+                questionGO.GetComponentInChildren<TMP_Text>().text = temp.keyQuestion.question;
+                temp.keyQuestion.associatedGO = questionGO;
+
+                temp.keyCanvasGO.SetActive(true);
                 break;
             }
             
@@ -53,12 +65,21 @@ public class DoorFunctions : MonoBehaviour
         doorManager.doorIsActive = false;
         switch(temp.mode)
         {
-            case QuestionPresentationMode.Text:
+            case QuestionPresentationMode.MCQ:
             {
                 for(int i = 0; i < temp.panelGO.transform.childCount; i++)
                     Destroy(temp.panelGO.transform.GetChild(i).gameObject);
 
                 temp.textCanvasGO.SetActive(false);
+                break;
+            }
+        
+            case QuestionPresentationMode.Key:
+            {
+                for(int i = 0; i < temp.keyPanelGO.transform.childCount; i++)
+                    Destroy(temp.keyPanelGO.transform.GetChild(i).gameObject);
+
+                temp.keyCanvasGO.SetActive(false);
                 break;
             }
             
@@ -82,26 +103,62 @@ public class DoorFunctions : MonoBehaviour
 
     public bool ActiveDoor(Door door)
     {
-        if(door.doorQuestion.mode != QuestionPresentationMode.Text)
+        if(door.doorQuestion.mode != QuestionPresentationMode.MCQ && door.doorQuestion.mode != QuestionPresentationMode.Key)
             return false;
-        
-        foreach(Option op in door.doorQuestion.question.options)
+        switch(door.doorQuestion.mode)
         {
-            if(Input.GetKeyDown(op.keyCode))
+            case QuestionPresentationMode.MCQ:
             {
-                if(op.isCorrect)
+                foreach(Option op in door.doorQuestion.question.options)
                 {
-                    Debug.Log("Correct Answer!!");
-                    StartCoroutine(FlashColor(op.associatedGO.GetComponentInChildren<Image>(), op.correctColor));
-                    door.enabled = false;
-                    return true;
+                    if(!Input.GetKeyDown(op.keyCode))
+                        continue;
+
+                    if(op.isCorrect)
+                    {
+                        Debug.Log("Correct Answer!!");
+                        StartCoroutine(FlashColor(op.associatedGO.GetComponentInChildren<Image>(), op.correctColor));
+                        door.enabled = false;
+                        return true;
+                    }
+                    else
+                    {
+                        StartCoroutine(FlashColor(op.associatedGO.GetComponentInChildren<Image>(), op.incorrectColor));
+                    }
+                }
+                break;
+            }
+
+            case QuestionPresentationMode.Key:
+            {
+                if(!Input.GetKeyDown(door.doorQuestion.keyQuestion.keyCode))
+                    break;
+
+                KeyQuestion keyQuestion = door.doorQuestion.keyQuestion;
+                Item item = inventoryManager.FindItem(keyQuestion.itemId);
+                if(item == null)
+                {
+                    StartCoroutine(FlashColor(keyQuestion.associatedGO.GetComponentInChildren<Image>(), keyQuestion.incorrectColor));
                 }
                 else
                 {
-                    StartCoroutine(FlashColor(op.associatedGO.GetComponentInChildren<Image>(), op.incorrectColor));
+                    Debug.Log("Found item!");
+                    inventoryManager.RemoveItem(item, true, inventoryManager.inventoryGO.activeSelf);
+                    StartCoroutine(FlashColor(keyQuestion.associatedGO.GetComponentInChildren<Image>(), keyQuestion.correctColor));
+                    door.enabled = false;
+                    return true;
                 }
+
+                break;
+            }
+
+            default:
+            {
+                Debug.LogError("Invalid presentation mode for activation function!");
+                break;
             }
         }
+        
         return false;
     }
 

@@ -5,6 +5,7 @@ public class Item : MonoBehaviour
 {
     public GameObject interactionUIGO;
     public new string name;
+    public int id;
     public Sprite sprite;
 
     public event Action<Item> clicked;
