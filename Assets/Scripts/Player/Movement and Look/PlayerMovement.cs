@@ -11,6 +11,8 @@ public class PlayerMovement : MonoBehaviour
     public float gravity = -9.81f;
     public float jumpHeight = 5f;
 
+    public Animator animator;
+
     private Vector3 velocity;
     private bool isGrounded;
 
@@ -54,6 +56,10 @@ public class PlayerMovement : MonoBehaviour
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
         }
+
+        float speedPercent = (x != 0 || z != 0 ? speed : 0) / speed;
+        animator.SetFloat("speedPercent", speedPercent);
+
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);     // gt^2
     }

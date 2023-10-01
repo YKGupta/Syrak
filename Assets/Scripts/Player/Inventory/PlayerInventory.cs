@@ -1,8 +1,8 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerInventory : MonoBehaviour
 {
+    public Animator animator;
     public float maxInteractionDistance = 10f;
     public InventoryManager inventoryManager;
     public Transform collectPoint;
@@ -12,6 +12,8 @@ public class PlayerInventory : MonoBehaviour
 
     private void Start()
     {
+        inventoryManager.animator = animator;
+        
         for(int i = 0; i < itemsParent.childCount; i++)
         {
             Item item = itemsParent.GetChild(i).GetComponent<Item>();

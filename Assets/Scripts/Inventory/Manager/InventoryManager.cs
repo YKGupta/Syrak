@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
-using System;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -18,6 +17,8 @@ public class InventoryManager : MonoBehaviour
 
     [HideInInspector]
     public bool isPlayerAllowedToOpenInventory;
+    [HideInInspector]
+    public Animator animator; // Set by PlayerInventory
 
     private List<Item> items;
 
@@ -71,6 +72,7 @@ public class InventoryManager : MonoBehaviour
         Cursor.lockState = state ? CursorLockMode.None : CursorLockMode.Locked;
 
         inventoryGO.SetActive(state);
+        animator.SetBool("openInventory", state);
     }
 
     public void ClearInventory(bool removeItemsFromListAsWell = false)

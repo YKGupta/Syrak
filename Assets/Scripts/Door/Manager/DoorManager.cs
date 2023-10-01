@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -5,6 +6,8 @@ public class DoorManager : MonoBehaviour
 {
     public Transform doorsParent;
     public DoorFunctions doorFunctions;
+
+    public event Action penaltyIncurred;
 
     private Door currentDoor;
 
@@ -32,7 +35,7 @@ public class DoorManager : MonoBehaviour
         if(!doorIsActive)
             return;
         
-        bool result = doorFunctions.ActiveDoor(currentDoor);
+        bool result = doorFunctions.ActiveDoor(currentDoor, this);
         if(result)
         {
             StartCoroutine(RemoveQuestionAndOpenDoor(2f));
@@ -64,6 +67,11 @@ public class DoorManager : MonoBehaviour
     {
         currentDoor = null;
         doorFunctions.RemoveQuestion(door, this);
+    }
+
+    public void OnPenaltyIncurred()
+    {
+        penaltyIncurred?.Invoke();
     }
 
     private IEnumerator RemoveQuestionAndOpenDoor(float waitTime)

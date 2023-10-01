@@ -137,7 +137,7 @@ public class DoorFunctions : MonoBehaviour
         }
     }
 
-    public bool ActiveDoor(Door door)
+    public bool ActiveDoor(Door door, DoorManager doorManager)
     {
         if(door.doorQuestion.mode != QuestionPresentationMode.MCQ && door.doorQuestion.mode != QuestionPresentationMode.Key && door.doorQuestion.mode != QuestionPresentationMode.Subjective)
             return false;
@@ -160,6 +160,7 @@ public class DoorFunctions : MonoBehaviour
                     else
                     {
                         StartCoroutine(FlashColor(op.associatedGO.GetComponent<UI_Initialiser>().GetImage(), op.incorrectColor));
+                        doorManager.OnPenaltyIncurred();
                     }
                 }
                 break;
