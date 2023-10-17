@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,67 +7,74 @@ public class DoorFunctions : MonoBehaviour
 {
     public InventoryManager inventoryManager;
 
+    public event Action<Door> doorInteractionStart;
+    public event Action<Door> doorInteractionOver;
+
     public void PresentQuestion(Door door, DoorManager doorManager)
     {
+        if(door == null)
+            return;
+
+        doorInteractionStart?.Invoke(door);
+
         DoorQuestion temp = door.doorQuestion;
         doorManager.doorIsActive = true;
 
-        PlayerManager.instance.isPlayerAllowedToLook = false;
-        PlayerManager.instance.isPlayerAllowedToMove = false;
-        inventoryManager.isPlayerAllowedToOpenInventory = false;
-        Cursor.lockState = CursorLockMode.None;
+        PlayerManager.instance.SetPlayerState(false);
 
         switch(temp.mode)
         {
             case QuestionPresentationMode.MCQ:
             {
-                GameObject questionGO = Instantiate(temp.questionPrefab, temp.panelGO.transform);
-                questionGO.GetComponent<UI_Initialiser>().SetText(temp.question.question);
-                
-                foreach(Option op in temp.question.options)
+                if(temp.showQuestion)
                 {
-                    GameObject optionGO = Instantiate(temp.optionPrefab, temp.panelGO.transform);
-                    optionGO.GetComponent<UI_Initialiser>().SetText(op.option);
-                    op.associatedGO = optionGO;
+                    GameObject questionGO = Instantiate(temp.questionPrefab, temp.panelGO.transform);
+                    questionGO.GetComponent<UI_Initialiser>().SetText(temp.question.question);
+                    
+                    foreach(Option op in temp.question.options)
+                    {
+                        GameObject optionGO = Instantiate(temp.optionPrefab, temp.panelGO.transform);
+                        optionGO.GetComponent<UI_Initialiser>().SetText(op.option);
+                        op.associatedGO = optionGO;
+                    }
                 }
 
                 temp.textCanvasGO.SetActive(true);
+                temp.panelGO.SetActive(true);
                 break;
             }
 
             case QuestionPresentationMode.Key:
             {
-                GameObject questionGO = Instantiate(temp.keyQuestionPrefab, temp.keyPanelGO.transform);
-                questionGO.GetComponent<UI_Initialiser>().SetText(temp.keyQuestion.question);
-                temp.keyQuestion.associatedGO = questionGO;
+                if(temp.showQuestion)
+                {
+                    GameObject questionGO = Instantiate(temp.keyQuestionPrefab, temp.keyPanelGO.transform);
+                    questionGO.GetComponent<UI_Initialiser>().SetText(temp.keyQuestion.question);
+                    temp.keyQuestion.associatedGO = questionGO;
+                }
 
                 temp.keyCanvasGO.SetActive(true);
+                temp.keyPanelGO.SetActive(true);
+                temp.keyTestInstructionsGO.SetActive(true);
                 break;
             }
 
             case QuestionPresentationMode.Subjective:
             {
-                GameObject questionGO = Instantiate(temp.subjectiveQuestionPrefab, temp.subjectivePanelGO.transform);
-                GameObject answerGO = Instantiate(temp.subjectiveAnswerPrefab, temp.subjectivePanelGO.transform);
-                questionGO.GetComponent<UI_Initialiser>().SetText(temp.subjectiveQuestion.question);
-                temp.subjectiveQuestion.associatedGO = questionGO;
-                temp.subjectiveQuestion.answer.associatedGO = answerGO;
-                temp.subjectiveQuestion.answer.associatedGO.GetComponent<UI_Initialiser>().GetInputField().onEndEdit.AddListener(temp.subjectiveQuestion.answer.OnEndEdit);
+                if(temp.showQuestion)
+                {
+                    Cursor.lockState = CursorLockMode.None;
 
+                    GameObject questionGO = Instantiate(temp.subjectiveQuestionPrefab, temp.subjectivePanelGO.transform);
+                    GameObject answerGO = Instantiate(temp.subjectiveAnswerPrefab, temp.subjectivePanelGO.transform);
+                    questionGO.GetComponent<UI_Initialiser>().SetText(temp.subjectiveQuestion.question);
+                    temp.subjectiveQuestion.associatedGO = questionGO;
+                    temp.subjectiveQuestion.answer.associatedGO = answerGO;
+                    temp.subjectiveQuestion.answer.associatedGO.GetComponent<UI_Initialiser>().GetInputField().onEndEdit.AddListener(temp.subjectiveQuestion.answer.OnEndEdit);
+                }
+
+                temp.subjectivePanelGO.SetActive(true);
                 temp.subjectiveCanvasGO.SetActive(true);
-                break;
-            }
-            
-            case QuestionPresentationMode.Audio:
-            {
-                temp.source.clip = temp.clip;
-                temp.source.Play();
-                break;
-            }
-            
-            case QuestionPresentationMode.Visual:
-            {
-                temp.animator.SetTrigger(temp.trigger);
                 break;
             }
             
@@ -79,55 +87,54 @@ public class DoorFunctions : MonoBehaviour
 
     public void RemoveQuestion(Door door, DoorManager doorManager)
     {
+        if(door == null)
+            return;
+
         DoorQuestion temp = door.doorQuestion;
         doorManager.doorIsActive = false;
 
-        PlayerManager.instance.isPlayerAllowedToLook = true;
-        PlayerManager.instance.isPlayerAllowedToMove = true;
-        inventoryManager.isPlayerAllowedToOpenInventory = true;
-        Cursor.lockState = CursorLockMode.Locked;
-
+        PlayerManager.instance.SetPlayerState(true);
+        
         switch(temp.mode)
         {
             case QuestionPresentationMode.MCQ:
             {
-                for(int i = 0; i < temp.panelGO.transform.childCount; i++)
-                    Destroy(temp.panelGO.transform.GetChild(i).gameObject);
+                if(temp.showQuestion)
+                {
+                    for(int i = 0; i < temp.panelGO.transform.childCount; i++)
+                        Destroy(temp.panelGO.transform.GetChild(i).gameObject);
+                }
 
                 temp.textCanvasGO.SetActive(false);
+                temp.panelGO.SetActive(false);
                 break;
             }
         
             case QuestionPresentationMode.Key:
             {
-                for(int i = 0; i < temp.keyPanelGO.transform.childCount; i++)
-                    Destroy(temp.keyPanelGO.transform.GetChild(i).gameObject);
+                if(temp.showQuestion)
+                {
+                    for(int i = 0; i < temp.keyPanelGO.transform.childCount; i++)
+                        Destroy(temp.keyPanelGO.transform.GetChild(i).gameObject);
+                }
 
                 temp.keyCanvasGO.SetActive(false);
+                temp.keyCanvasGO.SetActive(false);
+                temp.keyTestInstructionsGO.SetActive(false);
                 break;
             }
         
             case QuestionPresentationMode.Subjective:
-            {
-                PlayerManager.instance.isPlayerAllowedToLook = true;
-                PlayerManager.instance.isPlayerAllowedToMove = true;
-                                
-                for(int i = 0; i < temp.subjectivePanelGO.transform.childCount; i++)
-                    Destroy(temp.subjectivePanelGO.transform.GetChild(i).gameObject);
+            {                    
+                Cursor.lockState = CursorLockMode.Locked;
+                if(temp.showQuestion)
+                {
+                    for(int i = 0; i < temp.subjectivePanelGO.transform.childCount; i++)
+                        Destroy(temp.subjectivePanelGO.transform.GetChild(i).gameObject);
+                }            
 
+                temp.subjectivePanelGO.SetActive(false);
                 temp.subjectiveCanvasGO.SetActive(false);
-                break;
-            }
-            
-            case QuestionPresentationMode.Audio:
-            {
-                temp.source.Stop();
-                break;
-            }
-            
-            case QuestionPresentationMode.Visual:
-            {
-                temp.animator.ResetTrigger(temp.trigger);
                 break;
             }
             
@@ -135,16 +142,22 @@ public class DoorFunctions : MonoBehaviour
                 Debug.LogError("No valid mode of question presentation specified.");
                 break;
         }
+
+        doorInteractionOver?.Invoke(door);
     }
 
     public bool ActiveDoor(Door door, DoorManager doorManager)
     {
         if(door.doorQuestion.mode != QuestionPresentationMode.MCQ && door.doorQuestion.mode != QuestionPresentationMode.Key && door.doorQuestion.mode != QuestionPresentationMode.Subjective)
             return false;
+
         switch(door.doorQuestion.mode)
         {
             case QuestionPresentationMode.MCQ:
             {
+                if(!door.doorQuestion.showQuestion)
+                    break;
+        
                 foreach(Option op in door.doorQuestion.question.options)
                 {
                     if(!Input.GetKeyDown(op.keyCode))
@@ -152,7 +165,6 @@ public class DoorFunctions : MonoBehaviour
 
                     if(op.isCorrect)
                     {
-                        Debug.Log("Correct Answer!!");
                         StartCoroutine(FlashColor(op.associatedGO.GetComponent<UI_Initialiser>().GetImage(), op.correctColor));
                         door.enabled = false;
                         return true;
@@ -175,14 +187,19 @@ public class DoorFunctions : MonoBehaviour
                 Item item = inventoryManager.FindItem(keyQuestion.itemId);
                 if(item == null)
                 {
-                    StartCoroutine(FlashColor(keyQuestion.associatedGO.GetComponent<UI_Initialiser>().GetImage(), keyQuestion.incorrectColor));
+                    if(door.doorQuestion.showQuestion)
+                        StartCoroutine(FlashColor(keyQuestion.associatedGO.GetComponent<UI_Initialiser>().GetImage(), keyQuestion.incorrectColor));
+                    else
+                        StartCoroutine(FlashColor(door.doorQuestion.keyPanelGO.GetComponent<UI_Initialiser>().GetImage(), keyQuestion.incorrectColor));
                 }
                 else
                 {
-                    Debug.Log("Found item!");
                     inventoryManager.RemoveItem(item, true, inventoryManager.inventoryGO.activeSelf);
-                    StartCoroutine(FlashColor(keyQuestion.associatedGO.GetComponent<UI_Initialiser>().GetImage(), keyQuestion.correctColor));
                     door.enabled = false;
+
+                    if(door.doorQuestion.showQuestion)
+                        StartCoroutine(FlashColor(keyQuestion.associatedGO.GetComponent<UI_Initialiser>().GetImage(), keyQuestion.correctColor));
+
                     return true;
                 }
 
@@ -191,6 +208,9 @@ public class DoorFunctions : MonoBehaviour
 
             case QuestionPresentationMode.Subjective:
             {
+                if(!door.doorQuestion.showQuestion)
+                    break;
+                    
                 SubjectiveQuestion subjectiveQuestion = door.doorQuestion.subjectiveQuestion;
 
                 if(!subjectiveQuestion.answer.answered)
@@ -206,7 +226,6 @@ public class DoorFunctions : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("Correct Answer!");
                     StartCoroutine(FlashColor(subjectiveQuestion.answer.associatedGO.GetComponent<UI_Initialiser>().GetImage(), subjectiveQuestion.correctColor));
                     door.enabled = false;
                     return true;

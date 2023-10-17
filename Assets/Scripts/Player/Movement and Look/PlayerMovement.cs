@@ -23,7 +23,10 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         if(!PlayerManager.instance.isPlayerAllowedToMove)
+        {
+            animator.SetFloat("speedPercent", 0);
             return;
+        }
 
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 

@@ -6,6 +6,7 @@ using TMPro;
 public class DoorQuestion
 {
     public string name;
+    public bool showQuestion = false;
     public QuestionPresentationMode mode;
 
     [HorizontalLine(color: EColor.Violet)]
@@ -31,6 +32,9 @@ public class DoorQuestion
     [ShowIf("mode", QuestionPresentationMode.Key)]
     [AllowNesting]
     public GameObject keyPanelGO;
+    [ShowIf("mode", QuestionPresentationMode.Key)]
+    [AllowNesting]
+    public GameObject keyTestInstructionsGO;
     [ShowIf("mode", QuestionPresentationMode.Key)]
     [AllowNesting]
     public GameObject keyQuestionPrefab;
