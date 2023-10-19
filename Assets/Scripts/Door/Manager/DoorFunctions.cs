@@ -223,6 +223,7 @@ public class DoorFunctions : MonoBehaviour
                 if(!typedAnswer.ToLower().Equals(subjectiveQuestion.answer.answer.ToLower()))
                 {
                     StartCoroutine(FlashColor(subjectiveQuestion.answer.associatedGO.GetComponent<UI_Initialiser>().GetImage(), subjectiveQuestion.incorrectColor));
+                    doorManager.OnPenaltyIncurred();
                 }
                 else
                 {
