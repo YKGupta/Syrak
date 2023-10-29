@@ -19,7 +19,7 @@ public class QuestManager : MonoBehaviour
 
     public void NextQuest()
     {
-        if(index > quests.Length)
+        if(index >= quests.Length)
             return;
 
         Quest quest = Array.Find<Quest>(quests, x => x.index == index);
