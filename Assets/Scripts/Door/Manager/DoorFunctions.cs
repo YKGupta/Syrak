@@ -248,6 +248,7 @@ public class DoorFunctions : MonoBehaviour
     public void OpenDoor(Door door, DoorManager doorManager)
     {
         door.animator.SetTrigger("Open");
+        SoundManager.instance.Play("Door");
     }
 
     private IEnumerator FlashColor(Image imageToFlash, Color flashColor, float frequency = 2, float timePerFlash = 0.2f)

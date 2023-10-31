@@ -82,6 +82,7 @@ public class DoorManager : MonoBehaviour
 
     public void OnPenaltyIncurred()
     {
+        SoundManager.instance.Play("Buzz");
         penaltyIncurred?.Invoke();
     }
 

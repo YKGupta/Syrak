@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0ed298c85dbc7b4f91359b166ca31e3, type: 3}
   m_Name: Document
   m_EditorClassIdentifier: 
-  canRotateAlongY: 1
+  canRotateAlongY: 0
   canRotateAlongX: 0
