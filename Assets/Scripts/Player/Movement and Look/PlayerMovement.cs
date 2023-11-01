@@ -6,7 +6,9 @@ public class PlayerMovement : MonoBehaviour
     public CharacterController controller;
     public float speed = 12f;
     public Transform groundCheck;
+    public Transform stepCheck;
     public float groundDistance = 0.4f;
+    public float stepAheadDistance = 2f;
     public LayerMask groundMask;
     public float gravity = -9.81f;
     public float jumpHeight = 5f;
@@ -15,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector3 velocity;
     private bool isGrounded;
+    private bool isStepAhead;
 
     public event Action playerMoved;
 
@@ -29,6 +32,16 @@ public class PlayerMovement : MonoBehaviour
         }
 
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        isStepAhead = Physics.Raycast(stepCheck.position, stepCheck.forward, stepAheadDistance, groundMask);
+
+        if(isStepAhead)
+        {
+            controller.stepOffset = 3f;
+        }
+        else
+        {
+            controller.stepOffset = 0f;
+        }
 
         if(isGrounded && velocity.y < 0f)
         {
@@ -65,5 +78,11 @@ public class PlayerMovement : MonoBehaviour
 
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);     // gt^2
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(stepCheck.position, stepCheck.position + stepCheck.forward * stepAheadDistance);
     }
 }
