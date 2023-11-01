@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
@@ -19,6 +20,9 @@ public class InventoryManager : MonoBehaviour
     public Animator animator; // Set by PlayerInventory
 
     private List<Item> items;
+
+    public event Action itemClicked;
+    public event Action inventoryOpened;
 
     public static InventoryManager instance;
 
@@ -46,6 +50,8 @@ public class InventoryManager : MonoBehaviour
 
     public void SetInventory(bool state)
     {
+        inventoryOpened?.Invoke();
+
         ClearInventory();
 
         if(state)
@@ -93,6 +99,7 @@ public class InventoryManager : MonoBehaviour
 
     public void AddItem(Item item)
     {
+        itemClicked?.Invoke();
         items.Add(item);
         item.gameObject.GetComponent<Renderer>().enabled = false;
         item.gameObject.GetComponent<Collider>().enabled = false;
