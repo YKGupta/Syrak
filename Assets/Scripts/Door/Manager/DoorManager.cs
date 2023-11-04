@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class DoorManager : MonoBehaviour
 {
+    public KeyCode doorInteractionKey;
+    public GameObject InteractionInstructionsGO;
     public Transform doorsParent;
     public DoorFunctions doorFunctions;
 
@@ -68,14 +70,34 @@ public class DoorManager : MonoBehaviour
         return openedDoors;
     }
 
-    public void OnDoorEntered(Door door, Transform player)
+    public void OnDoorEntered(Door door, Transform player, bool externallyTriggered = false)
     {
-        currentDoor = door;
-        doorFunctions.PresentQuestion(door, this);
+        if(currentDoor == door)
+            return;
+
+        if(Input.GetKeyDown(doorInteractionKey) || externallyTriggered)
+        {
+            currentDoor = door;
+            doorFunctions.PresentQuestion(door, this);
+            InteractionInstructionsGO.SetActive(false);
+        }
+        else
+        {
+            if(!externallyTriggered && !InteractionInstructionsGO.activeSelf)
+            {
+                InteractionInstructionsGO.SetActive(true);
+            }
+        }
     }
 
-    public void OnDoorExited(Door door, Transform player)
+    public void OnDoorExited(Door door, Transform player, bool exitedTrigger)
     {
+        if(exitedTrigger)
+            InteractionInstructionsGO.SetActive(false);
+        else
+            InteractionInstructionsGO.SetActive(true);
+
+
         currentDoor = null;
         doorFunctions.RemoveQuestion(door, this);
     }

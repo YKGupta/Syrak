@@ -13,10 +13,11 @@ public class Door : MonoBehaviour
     [ShowIf("isLocked")]
     public KeyCode exitDoorKeyCode;
 
-    public event Action<Door, Transform> PlayerEntered; 
-    public event Action<Door, Transform> PlayerExited; 
+    public event Action<Door, Transform, bool> PlayerEntered; 
+    public event Action<Door, Transform, bool> PlayerExited; 
 
     private bool isDoorTriggered = false;
+    private bool isComputerTriggered = false;
 
     private void Update()
     {
@@ -25,17 +26,18 @@ public class Door : MonoBehaviour
 
         if(Input.GetKeyDown(exitDoorKeyCode))
         {
-            PlayerExited?.Invoke(this, null);
+            PlayerExited?.Invoke(this, null, isComputerTriggered);
         }
     }
 
     public void ExternalEnterDoorInvokation(Transform other)
     {
-        PlayerEntered?.Invoke(this, other);
+        PlayerEntered?.Invoke(this, other, true);
         isDoorTriggered = true;
+        isComputerTriggered = true;
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         if(!enabled)
             return;
@@ -44,7 +46,7 @@ public class Door : MonoBehaviour
             
         if(other.CompareTag("Player"))
         {
-            PlayerEntered?.Invoke(this, other.transform);
+            PlayerEntered?.Invoke(this, other.transform, false);
         }
     }
 
@@ -57,7 +59,7 @@ public class Door : MonoBehaviour
             
         if(other.CompareTag("Player"))
         {
-            PlayerExited?.Invoke(this, other.transform);
+            PlayerExited?.Invoke(this, other.transform, true);
         }
     }
 }

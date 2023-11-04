@@ -100,7 +100,7 @@ public class TimerManager : MonoBehaviour
 
     private IEnumerator FlashImage(Image image, Color flashColor, int freqency = 2, float flashTime = 1f)
     {
-        Color baseColor = image.color;
+        Color baseColor = new Color(image.color.r, image.color.g, image.color.b, 0f);
         for(int i = 0; i < freqency; i++)
         {
             float startTime = Time.time;
