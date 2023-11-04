@@ -9,12 +9,14 @@ public class PauseManager : MonoBehaviour
     public Slider sensitivitySlider;
 
     private bool isPaused = false;
+    private bool wasPlayerAllowedToMove;
 
     public event Action sensitivityChanged;
 
     private void Start()
     {
         isPaused = false;
+        wasPlayerAllowedToMove = true;
         sensitivitySlider.value = PlayerPrefs.GetFloat("Sensitivity", 100);
     }
 
@@ -22,15 +24,18 @@ public class PauseManager : MonoBehaviour
     {
         if(Input.GetKeyDown(pauseKey))
         {
+            Debug.Log("Called");
             SetPause();
         }
+        wasPlayerAllowedToMove = PlayerManager.instance.isPlayerAllowedToMove;
     }
 
     public void SetPause()
     {
-        if(!isPaused && !PlayerManager.instance.isPlayerAllowedToMove)
+        if(!isPaused && !wasPlayerAllowedToMove)
             return;
 
+        Debug.Log("PAUSED");
         isPaused = !isPaused;
         Time.timeScale = isPaused ? 0f : 1f;
         pausePanelGO.SetActive(isPaused);

@@ -13,6 +13,8 @@ public class MainMenuManager : MonoBehaviour
 
     private void Start()
     {
+        Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.None;
         loadOperation = null;
     }
 

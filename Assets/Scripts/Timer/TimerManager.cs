@@ -62,8 +62,7 @@ public class TimerManager : MonoBehaviour
 
         if(timeElapsed >= maxTime)
         {
-            if(timeOver != null)
-                timeOver();
+            timeOver?.Invoke();
 
             enabled = false;
         }
