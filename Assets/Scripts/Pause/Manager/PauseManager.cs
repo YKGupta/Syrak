@@ -24,7 +24,6 @@ public class PauseManager : MonoBehaviour
     {
         if(Input.GetKeyDown(pauseKey))
         {
-            Debug.Log("Called");
             SetPause();
         }
         wasPlayerAllowedToMove = PlayerManager.instance.isPlayerAllowedToMove;
@@ -35,7 +34,6 @@ public class PauseManager : MonoBehaviour
         if(!isPaused && !wasPlayerAllowedToMove)
             return;
 
-        Debug.Log("PAUSED");
         isPaused = !isPaused;
         Time.timeScale = isPaused ? 0f : 1f;
         pausePanelGO.SetActive(isPaused);

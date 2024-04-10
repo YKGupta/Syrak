@@ -21,8 +21,12 @@ public class DoorManager : MonoBehaviour
     private int currentDoorIndex = 0;
     private List<Door> doors;
 
+    private bool doorInteractionKeyPressed;
+
     [HideInInspector]
     public bool doorIsActive;
+
+    private Door b_door;
 
     private void Awake()
     {
@@ -45,9 +49,16 @@ public class DoorManager : MonoBehaviour
 
     private void Update()
     {
+        doorInteractionKeyPressed = Input.GetKeyDown(doorInteractionKey);
+        
+        if(doorInteractionKeyPressed && currentDoor == null && b_door != null)
+        {
+            SetDoor(b_door);
+        }
+
         if(!doorIsActive)
             return;
-        
+
         bool result = doorFunctions.ActiveDoor(currentDoor, this);
         if(result)
         {
@@ -72,28 +83,27 @@ public class DoorManager : MonoBehaviour
 
     public void OnDoorEntered(Door door, Transform player, bool externallyTriggered = false)
     {
-        if(currentDoor == door)
+        if(externallyTriggered)
+        {
+            SetDoor(door);
             return;
+        }
 
-        if(Input.GetKeyDown(doorInteractionKey) || externallyTriggered)
+        if(!InteractionInstructionsGO.activeSelf)
         {
-            currentDoor = door;
-            doorFunctions.PresentQuestion(door, this);
-            InteractionInstructionsGO.SetActive(false);
+            InteractionInstructionsGO.SetActive(true);
         }
-        else
-        {
-            if(!externallyTriggered && !InteractionInstructionsGO.activeSelf)
-            {
-                InteractionInstructionsGO.SetActive(true);
-            }
-        }
+
+        b_door = door;
     }
 
     public void OnDoorExited(Door door, Transform player, bool exitedTrigger)
     {
         if(exitedTrigger)
+        {
+            b_door = null;
             InteractionInstructionsGO.SetActive(false);
+        }
         else
             InteractionInstructionsGO.SetActive(true);
 
@@ -117,11 +127,22 @@ public class DoorManager : MonoBehaviour
         doorOpened?.Invoke();
         
         currentDoor = null;
+        b_door = null;
         openedDoors++;
 
         currentDoorIndex++;
         SetNextDoor();
 
+    }
+
+    private void SetDoor(Door door)
+    {
+        if(currentDoor == door)
+            return;
+        
+        currentDoor = door;
+        doorFunctions.PresentQuestion(door, this);
+        InteractionInstructionsGO.SetActive(false);
     }
 
     private void SetNextDoor()

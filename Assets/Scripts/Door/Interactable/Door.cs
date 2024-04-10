@@ -30,14 +30,14 @@ public class Door : MonoBehaviour
         }
     }
 
-    public void ExternalEnterDoorInvokation(Transform other)
+    public void ExternalEnterDoorInvokation()
     {
-        PlayerEntered?.Invoke(this, other, true);
+        PlayerEntered?.Invoke(this, null, true);
         isDoorTriggered = true;
         isComputerTriggered = true;
     }
 
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if(!enabled)
             return;

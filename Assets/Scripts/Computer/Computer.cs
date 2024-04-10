@@ -14,11 +14,21 @@ public class Computer : MonoBehaviour
     private void Start()
     {
         triggerEvents.onTriggerEnter += OnPlayerEnter;
-        triggerEvents.onTriggerStay += OnPlayerStay;
         triggerEvents.onTriggerExit += OnPlayerExit;
         doorFunctions.doorInteractionStart += OnDoorInteractionStart;
         doorFunctions.doorInteractionOver += OnDoorInteractionOver;
         isTriggered = false;
+    }
+
+    private void Update()
+    {
+        if(!isTriggered || door == null)
+            return;
+
+        if(Input.GetKeyDown(computerInteractionKey))
+        {
+            SetComputer();
+        }
     }
 
     public void OnPlayerEnter(Collider playerC)
@@ -30,20 +40,17 @@ public class Computer : MonoBehaviour
         InteractionInstructionsGO.SetActive(true);
     }
 
-    public void OnPlayerStay(Collider playerC)
+    private void SetComputer()
     {
-        if(door == null || !playerC.CompareTag("Player"))
+        if(door.doorQuestion.showQuestion)
             return;
-
-        if(!Input.GetKeyDown(computerInteractionKey))
-            return;
-
+            
         InteractionInstructionsGO.SetActive(false);
 
         prevDoorQuestionState = false;
         door.doorQuestion.showQuestion = true;
 
-        door.ExternalEnterDoorInvokation(playerC.transform);
+        door.ExternalEnterDoorInvokation();
     }
 
     public void OnPlayerExit(Collider playerC)
